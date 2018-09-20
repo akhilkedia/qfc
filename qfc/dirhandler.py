@@ -67,7 +67,7 @@ class DefaultDirHandler():
 
     def __init__(self):
         self._cache = {}
-        self.MAX_DEPTH = 3
+        self.MAX_DEPTH = 2
 
     def _walk_down(self, start_dir):
         try:
