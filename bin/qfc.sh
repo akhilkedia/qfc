@@ -46,6 +46,7 @@ if [[ -n "$ZSH_VERSION" ]]; then
         # get the word under cursor
         word=${BUFFER[0,offset]}
         word=${word##* }
+        word=${word##*=}
 
         # instruct qfc to store the result (completion path) into a temporary file
         tmp_file=$(mktemp -t qfc.XXXXXXX)
@@ -95,6 +96,7 @@ elif [[ -n "$BASH" ]]; then
 
         word=${READLINE_LINE:0:offset}
         word=${word##* }
+        word=${word##*=}
 
         tmp_file=$(mktemp -t qfc.XXXXXXX)
         </dev/tty "$QFC" --search="$word" --stdout="$tmp_file"
