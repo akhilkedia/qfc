@@ -120,7 +120,7 @@ class State(object):
 
 
 def get_matches(root_dir, user_input):
-    start_dir = join_paths(root_dir, os.path.dirname(user_input)) 
+    start_dir = join_paths(root_dir, os.path.dirname(user_input))
     search_str = os.path.basename(user_input)
     if not os.path.isdir(start_dir):
         return []
@@ -134,7 +134,7 @@ def filter_files(files, search_str):
     """ Filter a list of files based on a search string
         :param files: list of files to filter (ie ['/a','/a/b', '/a/b/c', '/b']), the order doesn't matter. 'a' and 'a/' are considered different.
         :param search_str, the filtering string (ie 'a')
-        
+
         This function return only first level files/dirs that match the given search string. That is, filtering  ['/a','/a/b','/a/b/c'] with the string 'a' returns only ['/a'],
         This is to avoid polluting the screen with all files inside a directory when a user look for that directory
     """
@@ -152,6 +152,7 @@ def filter_files(files, search_str):
                 trail = f[index:]
                 f = f[:index + _index_or_len(trail, os.sep)+1]
                 matched.add(f)
+    matched = [f for f in matched if f != './']
     return matched
 
 def sort_matches(matches, string):
@@ -184,13 +185,13 @@ def get_weight(path, string):
             |                                                                                       |
             v                                                                                       v
 index of the string in the path element + 10                                 (index of the matched word within path element words + 1)
-                                        
+
 
     Maximums are added to make sure things doesn't overlap
     """
     weight = 0
     if not is_dir(path):
-        weight += 1 
+        weight += 1
 
     string = string.lower()
     p = path.rstrip(os.sep).lower()

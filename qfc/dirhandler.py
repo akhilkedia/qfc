@@ -1,9 +1,9 @@
 import os
 import subprocess
-import sys 
+import sys
 
 class CVSHandler():
-    """ Handler of CVS (fir, mercurial...) directories, 
+    """ Handler of CVS (fir, mercurial...) directories,
         The main purpose of this class is to cache external cvs command output, and determine the appropriate files to yield when navigating to a subdirectory of a project.
         This basically means that the external command is run once (ie git ls-files), cached, and when calling get_source_files on a subdirectory of the project root (ie project-root/subdir),
         filtering from all project files of is done here.
@@ -44,7 +44,7 @@ class CVSHandler():
             rel_dir = os.path.relpath(directory, root_dir)
             files = [f[len(rel_dir)+1:] for f in files if f.startswith(rel_dir)]
         return files
- 
+
 
 class Git():
     @staticmethod
@@ -71,7 +71,8 @@ class DefaultDirHandler():
 
     def _walk_down(self, start_dir):
         try:
-            out = run_command("find %s -maxdepth %s -type f -not -path '*/\.*'" % (start_dir, self.MAX_DEPTH))
+            out = run_command(
+                "{ find %s -maxdepth %s -not -path '*/\\.*' -type d -print | sed 's!$!/!'; find %s -maxdepth %s -not -path '*/\\.*' -type f -or -type l ; } | sed -n 's|^%s/||p'" % (start_dir, self.MAX_DEPTH, start_dir, self.MAX_DEPTH, start_dir))
         except subprocess.CalledProcessError as e:
             # Find returns a non 0 exit status if listing a directory fails (for example, permission denied), but still output all files in other dirs
             # ignore those failed directories.
@@ -81,7 +82,7 @@ class DefaultDirHandler():
         if not out:
             return []
         files = out.split('\n')
-        return [os.path.relpath(f, start_dir) for f in files if f]
+        return [f for f in files if f]
 
     def get_source_files(self, start_dir):
         if not start_dir in self._cache:
